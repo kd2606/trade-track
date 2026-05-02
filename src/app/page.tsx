@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Store, TrendingUp, Wallet, History } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 
 export default function LandingPage() {
@@ -19,115 +20,54 @@ export default function LandingPage() {
     })
   };
 
-  const handleMicrosoftLogin = async () => {
-    const siteUrl =
-      process.env.NEXT_PUBLIC_SITE_URL ||
-      (typeof window !== 'undefined' ? window.location.origin : '');
-
-    await supabase.auth.signInWithOAuth({
-      provider: 'azure',
-      options: {
-        redirectTo: `${siteUrl}/auth/callback`,
-      },
-    })
-  };
-
   return (
-    <div className="min-h-screen bg-surface font-body-md text-on-surface flex items-center justify-center relative overflow-hidden">
-      {/* Background Abstract Layer */}
-      <div className="absolute inset-0 z-0">
-        <div className="w-full h-full bg-gradient-to-tr from-surface via-transparent to-primary/5"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 via-transparent to-emerald-50/20"></div>
-      </div>
-
-      {/* Login Container */}
-      <main className="relative z-10 w-full max-w-md px-6 py-12">
-        <div className="glass-card border border-outline-variant/30 rounded-xl shadow-xl shadow-gray-900/5 p-8 animate-fade-in-up">
-          {/* Brand Identity */}
-          <div className="flex flex-col items-center text-center mb-8">
-            <div className="w-12 h-12 bg-primary-container rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
-              <span className="material-symbols-outlined text-white text-3xl">insights</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-emerald-50 flex items-center justify-center p-6 font-sans">
+      <div className="max-w-5xl mx-auto w-full grid md:grid-cols-2 gap-8 items-center">
+        {/* Left Section (Hero/Information) */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center shadow-sm text-white">
+              <Store size={24} />
             </div>
-            <h1 className="text-3xl font-bold text-on-surface tracking-tight mb-2">TradeTrack</h1>
-            <p className="text-on-surface-variant">Log in to manage your enterprise operations</p>
-          </div>
-
-          {/* Login Form */}
-          <form className="space-y-6">
-            {/* Email Field */}
-            <div className="floating-label-group">
-              <input 
-                className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 pt-4 pb-2 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all duration-200 peer" 
-                id="email" 
-                name="email" 
-                placeholder=" " 
-                required 
-                type="email" 
-              />
-              <label className="floating-label" htmlFor="email">
-                <span className="material-symbols-outlined text-lg">mail</span>
-                Email Address
-              </label>
-            </div>
-
-            {/* Password Field */}
-            <div className="floating-label-group">
-              <input 
-                className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 pt-4 pb-2 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all duration-200 peer" 
-                id="password" 
-                name="password" 
-                placeholder=" " 
-                required 
-                type="password" 
-              />
-              <label className="floating-label" htmlFor="password">
-                <span className="material-symbols-outlined text-lg">lock</span>
-                Password
-              </label>
-              <button 
-                className="absolute right-4 top-4 text-on-surface-variant hover:text-primary transition-colors" 
-                type="button"
-              >
-                <span className="material-symbols-outlined text-lg">visibility</span>
-              </button>
-            </div>
-
-            {/* Remember & Forgot */}
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <div className="relative flex items-center">
-                  <input className="peer h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary/20 transition-all" type="checkbox" />
-                </div>
-                <span className="text-on-surface-variant group-hover:text-on-surface transition-colors">Remember me</span>
-              </label>
-              <a className="text-primary hover:text-on-primary-fixed-variant transition-colors" href="#">Forgot Password?</a>
-            </div>
-
-            {/* Submit Button */}
-            <button 
-              className="w-full h-12 bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-bold rounded-lg shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2" 
-              type="submit"
-            >
-              Log In
-              <span className="material-symbols-outlined text-lg">arrow_forward</span>
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-outline-variant"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase tracking-wider">
-              <span className="bg-white/80 px-4 text-on-surface-variant backdrop-blur-sm">Or continue with</span>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 leading-tight">TradeTrack</h1>
+              <p className="text-sm font-medium text-slate-500">Your business, in numbers.</p>
             </div>
           </div>
+          
+          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-slate-900">
+            Track daily sales, expenses & <span className="text-emerald-600">profit</span> in real time.
+          </h2>
+          
+          <p className="text-lg text-slate-600">
+            A clean, minimal dashboard built for shopkeepers and small business owners. Add a sale and instantly see your profit update — no spreadsheets, no stress.
+          </p>
+          
+          <ul className="space-y-4 pt-2">
+            <li className="flex items-center gap-3">
+              <TrendingUp className="text-emerald-600 w-6 h-6 shrink-0" />
+              <span className="text-slate-700 font-medium text-lg">Live profit / loss at a glance</span>
+            </li>
+            <li className="flex items-center gap-3">
+              <Wallet className="text-blue-600 w-6 h-6 shrink-0" />
+              <span className="text-slate-700 font-medium text-lg">Categorised expense tracking</span>
+            </li>
+            <li className="flex items-center gap-3">
+              <History className="text-amber-600 w-6 h-6 shrink-0" />
+              <span className="text-slate-700 font-medium text-lg">Searchable transaction history</span>
+            </li>
+          </ul>
+        </div>
 
-          {/* Social Logins */}
-          <div className="grid grid-cols-2 gap-3 mb-8">
+        {/* Right Section (Login Card) */}
+        <div className="w-full max-w-md mx-auto md:ml-auto">
+          <div className="rounded-xl border border-slate-200 bg-white shadow-xl p-8">
+            <h3 className="text-2xl font-bold text-slate-900 mb-2 text-center">Welcome back</h3>
+            <p className="text-slate-600 mb-8 text-center">Sign in with Google to access your dashboard.</p>
+            
             <button 
               onClick={handleGoogleLogin}
-              className="flex items-center justify-center gap-2 h-11 bg-white border border-outline-variant rounded-lg hover:bg-surface-container transition-all active:scale-95 group"
+              className="w-full flex items-center justify-center gap-3 bg-white border border-slate-300 rounded-lg py-3 px-4 shadow-sm hover:bg-slate-50 transition-colors focus:ring-2 focus:ring-emerald-500 outline-none"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -135,37 +75,15 @@ export default function LandingPage() {
                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
               </svg>
-              <span className="text-on-surface">Google</span>
+              <span className="font-medium text-slate-700">Continue with Google</span>
             </button>
             
-            <button 
-              onClick={handleMicrosoftLogin}
-              className="flex items-center justify-center gap-2 h-11 bg-white border border-outline-variant rounded-lg hover:bg-surface-container transition-all active:scale-95 group"
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <rect x="2" y="2" width="9" height="9" fill="#F25022"/>
-                <rect x="13" y="2" width="9" height="9" fill="#7FBA00"/>
-                <rect x="2" y="13" width="9" height="9" fill="#00A4EF"/>
-                <rect x="13" y="13" width="9" height="9" fill="#FFB900"/>
-              </svg>
-              <span className="text-on-surface">Microsoft</span>
-            </button>
+            <p className="text-xs text-slate-400 mt-6 text-center">
+              By continuing you agree to use this internal tool responsibly.
+            </p>
           </div>
-
-          {/* Sign Up CTA */}
-          <p className="text-center text-on-surface-variant">
-            New to TradeTrack? 
-            <a className="text-primary font-semibold hover:underline decoration-2 underline-offset-4 ml-1" href="#">Create an account</a>
-          </p>
         </div>
-
-        {/* Footer Links */}
-        <footer className="mt-8 flex justify-center gap-6 text-xs text-on-surface-variant">
-          <a className="hover:text-primary transition-colors" href="#">Privacy Policy</a>
-          <a className="hover:text-primary transition-colors" href="#">Terms of Service</a>
-          <a className="hover:text-primary transition-colors" href="#">Contact Support</a>
-        </footer>
-      </main>
+      </div>
     </div>
   );
 }
