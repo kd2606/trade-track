@@ -19,7 +19,6 @@ import {
   Calculator
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import ThemeToggle from "@/components/ThemeToggle";
 
 import { addSale, addExpense } from "@/app/actions";
 
@@ -196,7 +195,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               Add Sale
             </button>
             <div className="w-px h-8 bg-slate-200 mx-2"></div>
-            <ThemeToggle />
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold text-sm">
                 K
