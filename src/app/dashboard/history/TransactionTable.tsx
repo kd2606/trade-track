@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from "react";
-import { Pen, Trash2, X, Check } from "lucide-react";
+import { Pen, Trash2, X, Check, FileText, Download } from "lucide-react";
 import { deleteTransaction, updateTransaction } from "@/app/actions";
+import { generateInvoice } from "@/app/actions/invoice";
 
 type Transaction = {
   id: string;
@@ -19,6 +20,7 @@ type Transaction = {
 export default function TransactionTable({ transactions }: { transactions: Transaction[] }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [isGeneratingInvoice, setIsGeneratingInvoice] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this transaction?")) return;
@@ -32,6 +34,27 @@ export default function TransactionTable({ transactions }: { transactions: Trans
     const formData = new FormData(e.currentTarget);
     await updateTransaction(id, formData);
     setEditingId(null);
+  };
+
+  const handleGenerateInvoice = async (id: string) => {
+    setIsGeneratingInvoice(id);
+    try {
+      const result = await generateInvoice(id);
+      if (result.success) {
+        // Create a temporary link to download the PDF
+        const link = document.createElement('a');
+        link.href = result.dataUrl;
+        link.download = `invoice-${result.invoiceNumber}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (error) {
+      console.error('Error generating invoice:', error);
+      alert('Failed to generate invoice. Please try again.');
+    } finally {
+      setIsGeneratingInvoice(null);
+    }
   };
 
   if (!transactions || transactions.length === 0) {
@@ -148,9 +171,24 @@ export default function TransactionTable({ transactions }: { transactions: Trans
             </td>
             <td className="px-6 py-4 text-right whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
               <div className="flex items-center justify-end gap-2">
+                {t.type === 'sale' && (
+                  <button
+                    onClick={() => handleGenerateInvoice(t.id)}
+                    disabled={isGeneratingInvoice === t.id}
+                    className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors disabled:opacity-50"
+                    aria-label="Generate Invoice"
+                    title="Generate Invoice"
+                  >
+                    {isGeneratingInvoice === t.id ? (
+                      <div className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <FileText className="w-4 h-4" />
+                    )}
+                  </button>
+                )}
                 <button
                   onClick={() => setEditingId(t.id)}
-                  disabled={isDeleting === t.id}
+                  disabled={isDeleting === t.id || isGeneratingInvoice === t.id}
                   className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors disabled:opacity-50"
                   aria-label="Edit"
                 >
@@ -158,7 +196,7 @@ export default function TransactionTable({ transactions }: { transactions: Trans
                 </button>
                 <button
                   onClick={() => handleDelete(t.id)}
-                  disabled={isDeleting === t.id}
+                  disabled={isDeleting === t.id || isGeneratingInvoice === t.id}
                   className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
                   aria-label="Delete"
                 >

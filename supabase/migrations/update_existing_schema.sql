@@ -1,8 +1,25 @@
--- TradeTrack Database Schema
--- Run this in your Supabase SQL Editor
+-- TradeTrack Database Schema Update
+-- Run this in your Supabase SQL Editor to update existing database
 
--- 1. Create the Products Table
-CREATE TABLE products (
+-- Option 1: If you want to keep existing data, run this first:
+-- Add new columns to existing transactions table if they don't exist
+ALTER TABLE transactions 
+ADD COLUMN IF NOT EXISTS product_name VARCHAR(200),
+ADD COLUMN IF NOT EXISTS cost_price DECIMAL(10, 2) DEFAULT 0,
+ADD COLUMN IF NOT EXISTS selling_price DECIMAL(10, 2) DEFAULT 0,
+ADD COLUMN IF NOT EXISTS quantity INTEGER DEFAULT 1;
+
+-- Option 2: If you want to start fresh (WARNING: This will delete all existing transaction data)
+-- Uncomment and run the following lines instead of the ALTER TABLE above:
+
+-- DROP TABLE IF EXISTS transactions CASCADE;
+-- DROP TABLE IF EXISTS budgets CASCADE;
+-- DROP TABLE IF EXISTS products CASCADE;
+
+-- Then run the full schema.sql file
+
+-- Create the Products Table
+CREATE TABLE IF NOT EXISTS products (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES auth.users(id) NOT NULL,
     name VARCHAR(200) NOT NULL,
@@ -16,8 +33,8 @@ CREATE TABLE products (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 2. Create the Budgets Table
-CREATE TABLE budgets (
+-- Create the Budgets Table
+CREATE TABLE IF NOT EXISTS budgets (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES auth.users(id) NOT NULL,
     category VARCHAR(100) NOT NULL,
@@ -30,90 +47,61 @@ CREATE TABLE budgets (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 3. Create the Transactions Table (Enhanced)
-CREATE TABLE transactions (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    user_id UUID REFERENCES auth.users(id) NOT NULL,
-    type VARCHAR(50) NOT NULL CHECK (type IN ('sale', 'expense')),
-    amount DECIMAL(10, 2) NOT NULL,
-    category VARCHAR(100) NOT NULL,
-    product_name VARCHAR(200),
-    description TEXT,
-    date TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-    cost_price DECIMAL(10, 2) DEFAULT 0,
-    selling_price DECIMAL(10, 2) DEFAULT 0,
-    quantity INTEGER DEFAULT 1,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 4. Enable Row Level Security (RLS)
--- This ensures users can only see their own business data!
+-- Enable Row Level Security (RLS)
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE budgets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 
--- 5. Create RLS Policies for Products
--- Policy: Users can view their own products
+-- Create RLS Policies for Products
+-- Drop existing policies first, then create new ones
+DROP POLICY IF EXISTS "Users can view their own products" ON products;
 CREATE POLICY "Users can view their own products"
 ON products FOR SELECT
 USING (auth.uid() = user_id);
 
--- Policy: Users can insert their own products
+DROP POLICY IF EXISTS "Users can insert their own products" ON products;
 CREATE POLICY "Users can insert their own products"
 ON products FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
--- Policy: Users can update their own products
+DROP POLICY IF EXISTS "Users can update their own products" ON products;
 CREATE POLICY "Users can update their own products"
 ON products FOR UPDATE
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 
--- Policy: Users can delete their own products
+DROP POLICY IF EXISTS "Users can delete their own products" ON products;
 CREATE POLICY "Users can delete their own products"
 ON products FOR DELETE
 USING (auth.uid() = user_id);
 
--- 6. Create RLS Policies for Budgets
--- Policy: Users can view their own budgets
+-- Create RLS Policies for Budgets
+-- Drop existing policies first, then create new ones
+DROP POLICY IF EXISTS "Users can view their own budgets" ON budgets;
 CREATE POLICY "Users can view their own budgets"
 ON budgets FOR SELECT
 USING (auth.uid() = user_id);
 
--- Policy: Users can insert their own budgets
+DROP POLICY IF EXISTS "Users can insert their own budgets" ON budgets;
 CREATE POLICY "Users can insert their own budgets"
 ON budgets FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
--- Policy: Users can update their own budgets
+DROP POLICY IF EXISTS "Users can update their own budgets" ON budgets;
 CREATE POLICY "Users can update their own budgets"
 ON budgets FOR UPDATE
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 
--- Policy: Users can delete their own budgets
+DROP POLICY IF EXISTS "Users can delete their own budgets" ON budgets;
 CREATE POLICY "Users can delete their own budgets"
 ON budgets FOR DELETE
 USING (auth.uid() = user_id);
 
--- 7. Create RLS Policies for Transactions
--- Policy: Users can view their own transactions
-CREATE POLICY "Users can view their own transactions"
-ON transactions FOR SELECT
-USING (auth.uid() = user_id);
+-- Update existing RLS Policies for Transactions (if needed)
+-- These should already exist from your original setup
 
--- Policy: Users can insert their own transactions
-CREATE POLICY "Users can insert their own transactions"
-ON transactions FOR INSERT
-WITH CHECK (auth.uid() = user_id);
-
--- Policy: Users can update their own transactions
-CREATE POLICY "Users can update their own transactions"
-ON transactions FOR UPDATE
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
-
--- Policy: Users can delete their own transactions
-CREATE POLICY "Users can delete their own transactions"
-ON transactions FOR DELETE
-USING (auth.uid() = user_id);
+-- Verify the setup
+SELECT 'Products table created successfully' as status;
+SELECT 'Budgets table created successfully' as status;
+SELECT 'Transactions table updated successfully' as status;

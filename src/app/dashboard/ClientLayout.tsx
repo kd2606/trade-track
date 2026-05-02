@@ -12,9 +12,14 @@ import {
   Store,
   Calendar,
   X,
-  ChevronDown
+  ChevronDown,
+  TrendingUp,
+  Package,
+  Target,
+  Calculator
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ThemeToggle from "@/components/ThemeToggle";
 
 import { addSale, addExpense } from "@/app/actions";
 
@@ -55,6 +60,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const titleMap: Record<string, string> = {
     "/dashboard": "Dashboard",
     "/dashboard/add": "Add Entry",
+    "/dashboard/products": "Products",
+    "/dashboard/budget": "Budget",
+    "/dashboard/tax": "Tax",
+    "/dashboard/reports": "Reports",
     "/dashboard/history": "History"
   };
   const pageTitle = titleMap[pathname] || "Dashboard";
@@ -97,6 +106,50 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           >
             <PlusCircle size={18} />
             <span className="text-sm">Add Entry</span>
+          </Link>
+          <Link
+            href="/dashboard/products"
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              pathname === "/dashboard/products"
+                ? "bg-slate-900 text-white shadow-sm font-medium"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            }`}
+          >
+            <Package size={18} />
+            <span className="text-sm">Products</span>
+          </Link>
+          <Link
+            href="/dashboard/budget"
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              pathname === "/dashboard/budget"
+                ? "bg-slate-900 text-white shadow-sm font-medium"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            }`}
+          >
+            <Target size={18} />
+            <span className="text-sm">Budget</span>
+          </Link>
+          <Link
+            href="/dashboard/tax"
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              pathname === "/dashboard/tax"
+                ? "bg-slate-900 text-white shadow-sm font-medium"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            }`}
+          >
+            <Calculator size={18} />
+            <span className="text-sm">Tax</span>
+          </Link>
+          <Link
+            href="/dashboard/reports"
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              pathname === "/dashboard/reports"
+                ? "bg-slate-900 text-white shadow-sm font-medium"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            }`}
+          >
+            <TrendingUp size={18} />
+            <span className="text-sm">Reports</span>
           </Link>
           <Link
             href="/dashboard/history"
@@ -143,6 +196,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               Add Sale
             </button>
             <div className="w-px h-8 bg-slate-200 mx-2"></div>
+            <ThemeToggle />
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold text-sm">
                 K
