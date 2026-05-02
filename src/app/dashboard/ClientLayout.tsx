@@ -21,10 +21,18 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { addSale, addExpense } from "@/app/actions";
+import { createClient } from "@/utils/supabase/client";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [modal, setModal] = useState<"sale" | "expense" | null>(null);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const supabase = createClient();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  };
 
   // Dynamic state for Sale Profit Calculation
   const [costPrice, setCostPrice] = useState<number>(0);
@@ -195,14 +203,54 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               Add Sale
             </button>
             <div className="w-px h-8 bg-slate-200 mx-2"></div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-                K
-              </div>
-              <div className="flex flex-col hidden sm:flex">
-                <span className="text-sm font-semibold text-slate-900">Krrish</span>
-                <span className="text-xs text-slate-500">mamahajan7@gmail.com</span>
-              </div>
+            <div className="relative">
+              <button 
+                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                className="flex items-center gap-3 hover:bg-slate-50 rounded-lg px-2 py-1 transition-colors"
+              >
+                <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                  K
+                </div>
+                <div className="flex flex-col hidden sm:flex">
+                  <span className="text-sm font-semibold text-slate-900">Krrish</span>
+                  <span className="text-xs text-slate-500">mamahajan7@gmail.com</span>
+                </div>
+                <ChevronDown size={16} className="text-slate-400" />
+              </button>
+              
+              {showProfileDropdown && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50">
+                  <Link 
+                    href="/profile"
+                    className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2 block"
+                  >
+                    <Store size={16} />
+                    Profile
+                  </Link>
+                  <Link 
+                    href="/about"
+                    className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2 block"
+                  >
+                    <History size={16} />
+                    About
+                  </Link>
+                  <Link 
+                    href="/contact"
+                    className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2 block"
+                  >
+                    <Banknote size={16} />
+                    Contact Support
+                  </Link>
+                  <div className="border-t border-slate-200 my-1"></div>
+                  <button 
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                  >
+                    <X size={16} />
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>
