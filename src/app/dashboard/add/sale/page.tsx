@@ -119,12 +119,17 @@ export default function AddSalePage() {
               </div>
               <div>
                 <Label htmlFor="category">Category *</Label>
-                <Select value={formData.category} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleInputChange('category', e.target.value)}>
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
+                <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
             </div>

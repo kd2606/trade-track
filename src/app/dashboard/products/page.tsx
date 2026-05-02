@@ -12,32 +12,27 @@ export default async function ProductsPage() {
     redirect("/");
   }
 
-  // Fetch products for the user
-  const { data: products, error } = await supabase
+  // Fetch products for this user
+  const { data: products, error: productsError } = await supabase
     .from("products")
     .select("*")
     .eq("user_id", user.id)
-    .order("name", { ascending: true });
+    .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("Error fetching products:", error);
-  }
-
-  // Fetch transactions to calculate current stock levels
-  const { data: transactions, error: transactionError } = await supabase
+  // Fetch transactions for stock calculations
+  const { data: transactions, error: transactionsError } = await supabase
     .from("transactions")
     .select("*")
     .eq("user_id", user.id)
     .order("date", { ascending: false });
 
-  if (transactionError) {
-    console.error("Error fetching transactions:", transactionError);
+  if (productsError) {
+    console.error("Error fetching products:", productsError);
   }
 
-  return (
-    <ProductsClient
-      products={products || []}
-      transactions={transactions || []}
-    />
-  );
+  if (transactionsError) {
+    console.error("Error fetching transactions:", transactionsError);
+  }
+
+  return <ProductsClient products={products || []} transactions={transactions || []} />;
 }

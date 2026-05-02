@@ -40,7 +40,6 @@ export default async function DashboardPage() {
 
   txs.forEach((tx) => {
     const txDate = new Date(tx.date);
-    const amount = Number(tx.amount);
 
     // Grouping by Date for charts
     const dateStr = txDate.toLocaleDateString("en-IN", { month: "short", day: "numeric" });
@@ -50,14 +49,29 @@ export default async function DashboardPage() {
     }
 
     if (tx.type === "sale") {
-      totalRevenue += amount;
-      dailyData[dateStr].revenue += amount;
-      dailyData[dateStr].profit += amount;
+      // For sales: revenue = selling_price, expense = cost_price, profit = selling_price - cost_price
+      const sellingPrice = Number(tx.selling_price || 0);
+      const costPrice = Number(tx.cost_price || 0);
+      const quantity = Number(tx.quantity || 1);
+      
+      const totalSellingPrice = sellingPrice * quantity;
+      const totalCostPrice = costPrice * quantity;
+      const profit = totalSellingPrice - totalCostPrice;
+
+      totalRevenue += totalSellingPrice;
+      totalExpenses += totalCostPrice;
+      dailyData[dateStr].revenue += totalSellingPrice;
+      dailyData[dateStr].expense += totalCostPrice;
+      dailyData[dateStr].profit += profit;
 
       if (txDate >= today) {
-        revenueToday += amount;
+        revenueToday += totalSellingPrice;
+        expensesToday += totalCostPrice;
       }
     } else if (tx.type === "expense") {
+      // For regular expenses: amount is the expense
+      const amount = Number(tx.amount);
+      
       totalExpenses += amount;
       dailyData[dateStr].expense += amount;
       dailyData[dateStr].profit -= amount;

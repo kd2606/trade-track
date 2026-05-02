@@ -27,6 +27,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const [modal, setModal] = useState<"sale" | "expense" | null>(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const supabase = createClient();
 
   const handleLogout = async () => {
@@ -40,6 +41,39 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const [quantity, setQuantity] = useState<number>(1);
   const estimatedProfit = (sellingPrice - costPrice) * quantity;
   
+  // Form submission handlers
+  const handleSaleAction = async (formData: FormData) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    
+    try {
+      await addSale(formData);
+      setModal(null);
+      // Reset form values
+      setCostPrice(0);
+      setSellingPrice(0);
+      setQuantity(1);
+    } catch (error) {
+      console.error('Error submitting sale:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleExpenseAction = async (formData: FormData) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    
+    try {
+      await addExpense(formData);
+      setModal(null);
+    } catch (error) {
+      console.error('Error submitting expense:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // Date helpers
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
   
@@ -51,19 +85,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     day: "numeric",
   });
 
-  // Action wrappers to close modal smoothly
-  const handleSaleAction = async (formData: FormData) => {
-    // Inject calculated amount (Selling Price * Quantity) to match schema expectations
-    formData.set('amount', (sellingPrice * quantity).toString());
-    await addSale(formData);
-    setModal(null);
-  };
-
-  const handleExpenseAction = async (formData: FormData) => {
-    await addExpense(formData);
-    setModal(null);
-  };
-
+  
   const titleMap: Record<string, string> = {
     "/dashboard": "Dashboard",
     "/dashboard/add": "Add Entry",
@@ -313,11 +335,18 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                   </div>
                 </div>
                 <div className="px-6 py-4 flex justify-end gap-3 rounded-b-xl border-t border-slate-100">
-                  <button type="button" onClick={() => setModal(null)} className="px-4 py-2 border border-slate-200 text-slate-700 bg-white rounded-lg text-sm font-semibold shadow-sm hover:bg-slate-50 transition-colors">
+                  <button type="button" onClick={() => setModal(null)} disabled={isSubmitting} className="px-4 py-2 border border-slate-200 text-slate-700 bg-white rounded-lg text-sm font-semibold shadow-sm hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     Cancel
                   </button>
-                  <button type="submit" className="px-4 py-2 bg-[#059669] text-white rounded-lg text-sm font-semibold shadow-sm hover:bg-emerald-700 transition-colors border border-transparent">
-                    Save Sale
+                  <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-[#059669] text-white rounded-lg text-sm font-semibold shadow-sm hover:bg-emerald-700 transition-colors border border-transparent disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      'Save Sale'
+                    )}
                   </button>
                 </div>
               </form>
@@ -373,11 +402,18 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                   </div>
                 </div>
                 <div className="px-6 py-4 flex justify-end gap-3 rounded-b-xl border-t border-slate-100">
-                  <button type="button" onClick={() => setModal(null)} className="px-4 py-2 border border-slate-200 text-slate-700 bg-white rounded-lg text-sm font-semibold shadow-sm hover:bg-slate-50 transition-colors">
+                  <button type="button" onClick={() => setModal(null)} disabled={isSubmitting} className="px-4 py-2 border border-slate-200 text-slate-700 bg-white rounded-lg text-sm font-semibold shadow-sm hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     Cancel
                   </button>
-                  <button type="submit" className="px-4 py-2 bg-[#e11d48] text-white rounded-lg text-sm font-semibold shadow-sm hover:bg-rose-700 transition-colors border border-transparent">
-                    Save Expense
+                  <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-[#e11d48] text-white rounded-lg text-sm font-semibold shadow-sm hover:bg-rose-700 transition-colors border border-transparent disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      'Save Expense'
+                    )}
                   </button>
                 </div>
               </form>

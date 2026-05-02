@@ -18,11 +18,12 @@ export async function addSale(formData: FormData) {
       {
         user_id: user.id,
         type: 'sale',
-        category: 'Sale', // Default or from form
+        category: 'Sale',
         description: formData.get('description'),
-        amount: formData.get('amount'),
+        amount: formData.get('selling_price'), // Store selling_price as amount for compatibility
         cost_price: formData.get('cost_price'),
         selling_price: formData.get('selling_price'),
+        quantity: formData.get('quantity') || 1,
         date: formData.get('date'),
       }
     ])
@@ -67,7 +68,7 @@ export async function addExpense(formData: FormData) {
   return { success: true }
 }
 
-export async function deleteTransaction(id: string) {
+export async function deleteTransaction(transactionId: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -78,7 +79,7 @@ export async function deleteTransaction(id: string) {
   const { error } = await supabase
     .from('transactions')
     .delete()
-    .eq('id', id)
+    .eq('id', transactionId)
     .eq('user_id', user.id)
 
   if (error) {
