@@ -73,7 +73,7 @@ export default function LandingPage() {
             <h3 className="text-2xl font-bold text-slate-900 mb-2 text-center">Welcome to TradeTrack</h3>
             <p className="text-slate-600 mb-6 text-center">Choose how you'd like to explore the platform</p>
             
-            <div className="space-y-3">
+            <div className="space-y-4">
               <button 
                 onClick={handleGoogleLogin}
                 className="w-full flex items-center justify-center gap-3 bg-white border border-slate-300 rounded-lg py-3 px-4 shadow-sm hover:bg-slate-50 transition-colors focus:ring-2 focus:ring-emerald-500 outline-none"
@@ -88,17 +88,21 @@ export default function LandingPage() {
               </button>
 
               <div className="relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-slate-400 text-sm">OR</span>
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-slate-300"></div>
                 </div>
-                <button 
-                  onClick={handleDemoLogin}
-                  className="w-full flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg py-3 px-4 shadow-sm transition-colors focus:ring-2 focus:ring-emerald-500 outline-none"
-                >
-                  <Eye className="w-5 h-5" />
-                  <span className="font-medium">Try Demo Account</span>
-                </button>
+                <div className="relative flex justify-center text-xs">
+                  <span className="bg-white px-2 text-slate-500">OR</span>
+                </div>
               </div>
+
+              <button 
+                onClick={handleDemoLogin}
+                className="w-full flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg py-3 px-4 shadow-sm transition-colors focus:ring-2 focus:ring-emerald-500 outline-none"
+              >
+                <Eye className="w-5 h-5" />
+                <span className="font-medium">Try Demo Account</span>
+              </button>
             </div>
             
             <p className="text-xs text-slate-400 mt-6 text-center">
