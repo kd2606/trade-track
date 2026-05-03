@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, TrendingDown, TrendingUp, LineChart as LineChartIcon } from "lucide-react";
+import { DollarSign, TrendingDown, TrendingUp, LineChart as LineChartIcon, Eye } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -48,8 +48,22 @@ export default function DashboardClient({
   revVsExpData: any[];
   recentTransactions: any[];
 }) {
+  // Check if in demo mode
+  const isDemoMode = typeof window !== 'undefined' && localStorage.getItem('demoMode') === 'true';
   return (
     <div className="space-y-6">
+      {isDemoMode && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 flex items-center gap-3">
+          <div className="w-6 h-6 bg-amber-600 rounded-full flex items-center justify-center">
+            <Eye className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <h3 className="text-amber-800 font-semibold">Demo Mode Active</h3>
+            <p className="text-amber-700 text-sm">You're viewing sample data. Sign in with Google to use real data.</p>
+          </div>
+        </div>
+      )}
+
       {/* Metrics Row */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
