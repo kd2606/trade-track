@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import DemoWrapper from "./DemoWrapper";
 import DashboardClient from "./DashboardClient";
 
 export default async function DashboardPage() {
@@ -9,84 +10,22 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/"); // if no specific login page is found
+    // Don't redirect immediately - let DemoWrapper handle demo mode check
+    return <DemoWrapper />;
   }
 
-  // Check if in demo mode
-  const isDemoMode = typeof window !== 'undefined' && localStorage.getItem('demoMode') === 'true';
+  // Fetch real transactions pointing to this user
+  const { data: txs, error } = await supabase
+    .from("transactions")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("date", { ascending: false });
 
-  let transactions = [];
-  
-  if (isDemoMode) {
-    // Generate realistic demo data
-    transactions = [
-      {
-        id: 'demo-1',
-        user_id: 'demo-user',
-        type: 'sale',
-        amount: 25800,
-        category: 'Sale',
-        description: 'Laptop Sale',
-        product_name: 'Dell Laptop',
-        cost_price: 23800,
-        selling_price: 25800,
-        quantity: 1,
-        date: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-        created_at: new Date(Date.now() - 86400000).toISOString()
-      },
-      {
-        id: 'demo-2',
-        user_id: 'demo-user',
-        type: 'sale',
-        amount: 4500,
-        category: 'Sale',
-        description: 'Office Chair Sale',
-        product_name: 'Ergonomic Chair',
-        cost_price: 3200,
-        selling_price: 4500,
-        quantity: 2,
-        date: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-        created_at: new Date(Date.now() - 172800000).toISOString()
-      },
-      {
-        id: 'demo-3',
-        user_id: 'demo-user',
-        type: 'expense',
-        amount: 5000,
-        category: 'Office Supplies',
-        description: 'Stationery and printer paper',
-        date: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
-        created_at: new Date(Date.now() - 259200000).toISOString()
-      },
-      {
-        id: 'demo-4',
-        user_id: 'demo-user',
-        type: 'sale',
-        amount: 12000,
-        category: 'Sale',
-        description: 'Monitor Sale',
-        product_name: 'Samsung Monitor',
-        cost_price: 8500,
-        selling_price: 12000,
-        quantity: 1,
-        date: new Date(Date.now() - 345600000).toISOString(), // 4 days ago
-        created_at: new Date(Date.now() - 345600000).toISOString()
-      }
-    ];
-  } else {
-    // Fetch real transactions pointing to this user
-    const { data: txs, error } = await supabase
-      .from("transactions")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("date", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching transactions:", error);
-    }
-
-    transactions = txs || [];
+  if (error) {
+    console.error("Error fetching transactions:", error);
   }
+
+  const transactions = txs || [];
 
   // Metrics
   let revenueToday = 0;
@@ -177,12 +116,16 @@ export default async function DashboardPage() {
   const recentTransactions = transactions.slice(0, 5);
 
   return (
-    <DashboardClient
-      metrics={metrics}
-      profitData={profitData}
-      expenseData={expenseData}
-      revVsExpData={revVsExpData}
-      recentTransactions={recentTransactions}
+    <DemoWrapper 
+      realData={
+        <DashboardClient
+          metrics={metrics}
+          profitData={profitData}
+          expenseData={expenseData}
+          revVsExpData={revVsExpData}
+          recentTransactions={recentTransactions}
+        />
+      }
     />
   );
 }
