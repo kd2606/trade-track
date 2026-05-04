@@ -23,9 +23,8 @@ export default function LandingPage() {
   };
 
   const handleDemoLogin = async () => {
-    // Store demo mode in localStorage
-    localStorage.setItem('demoMode', 'true');
-    router.push('/dashboard');
+    // Navigate directly to demo route
+    router.push('/demo');
   };
 
   return (

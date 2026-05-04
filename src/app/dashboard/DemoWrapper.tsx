@@ -69,7 +69,7 @@ export default function DemoWrapper({ realData }: { realData?: any }) {
     const demoMode = localStorage.getItem('demoMode') === 'true';
     setIsDemoMode(demoMode);
     
-    // If demo mode is not set, redirect to home
+    // If neither demo mode nor real data, redirect to home
     if (!demoMode && !realData) {
       router.push('/');
     }
